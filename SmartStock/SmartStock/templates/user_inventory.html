@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory View | InventoryPro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #D2691E;
+            --secondary-color:#8B5E3C; 
+            --light-color: #f3d19f;
+            --success-color: #DAA520;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Abril Fatface",cursive;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .navbar {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-links a.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-links i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 2rem;
+        }
+        
+        .search-bar input {
+            flex-grow: 1;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px 0 0 5px;
+            font-size: 1rem;
+        }
+        
+        .search-bar button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+        
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .inventory-table th,
+        .inventory-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .inventory-table th {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .stock-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-in-stock {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-low-stock {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-out-of-stock {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        @media (max-width: 768px) {
+            .hamburger {
+                display: block;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background-color: var(--secondary-color);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 1rem 0;
+            }
+            
+            .inventory-table {
+                font-size: 0.9rem;
+            }
+            
+            .inventory-table th,
+            .inventory-table td {
+                padding: 0.8rem;
+            }
+        }
+
+
+        /* Inventory Table */
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        .inventory-table th,
+        .inventory-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .inventory-table th {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+        
+        .inventory-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .item-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        
+        .item-name {
+            display: flex;
+            align-items: center;
+        }
+        
+        .stock-status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .status-in-stock {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-low-stock {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-out-of-stock {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="/user_dashboard" ><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="/user_inventory" class="active"><i class="fa-solid fa-cubes-stacked"></i> SmartStock</a></li>
+            <li><a href="/"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+
+        <div class="hamburger">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </div>
+        <div class="logo">
+            <i class="fa-sharp fa-solid fa-layer-group"></i>
+            <span>SmartStock</span>
+        </div>
+        
+    </nav>
+
+    <div class="container">
+        {% if bill %}
+            <p>Thank you!. Click <a href="{{bill}}" target="_blank">here</a> To Download bill</p>
+            {% endif %}
+        <div class="page-header">
+            <h1><i class="fa-solid fa-cubes-stacked"></i> Stock View</h1>
+            <div>Total Stocks: <strong>{{total_items}}</strong></div>
+        </div>
+        
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in result %}
+                <tr>
+                    <td style="display: flex;flex-direction: column;justify-content: center;align-items: center;">
+                            <img src="data:image/jpg;base64,{{row[-1]}}" class="item-image">
+                            {{row[1]}}
+                    </td>
+                    <td>{{row[2]}}</td>
+                    <td>{{row[3]}}</td>
+                    <td>{{row[4]}}</td>
+                    {% set stock = row[3]|int %}
+
+                    {% if stock <= 0 %}
+                        <td><span class="stock-status status-out-of-stock">{{ row[5] }}</span></td>
+                    {% elif stock < 100 %}
+                        <td><span class="stock-status status-low-stock">{{ row[5] }}</span></td>
+                    {% else %}
+                        <td><span class="stock-status status-in-stock">{{ row[5] }}</span></td>
+                    {% endif %}
+                    <td>{{row[6]}}</td>
+                    <td>
+                        <a style="text-decoration: none;" href="/buy_item/{{row[0]}}" class="btn btn-primary">Buy</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Pagination
+        const paginationBtns = document.querySelectorAll('.pagination-btn');
+        paginationBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                paginationBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                // In a real app, you would load the corresponding page
+            });
+        });
+    </script>
+</body>
+</html>
